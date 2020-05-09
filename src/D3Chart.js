@@ -1,5 +1,7 @@
 import * as d3 from 'd3'
 
+const url = "https://udemy-react-d3.firebaseio.com/ages.json"
+
 export default class D3Chart {
   constructor(element) {
     const svg = d3.select(element)
@@ -7,11 +9,27 @@ export default class D3Chart {
       .attr("width", 500)
       .attr("height", 500)
 
-    svg.append("rect")
-      .attr("x", 50)
-      .attr("y", 50)
-      .attr("width", 100)
-      .attr("height", 400)
-      .attr("fill", "grey")
+    d3.json(url)
+      .then(agesData => {
+        const rects = svg.selectAll("rect")
+          .data(agesData)
+
+        // similar to a forEach loop
+        // using functions instead of strings
+        // d value gives us access to the item in the array
+        // i value gives us the index
+        rects.enter()
+          .append("rect")
+          .attr("x", (d, i) => i * 100)
+          .attr("y", 50)
+          .attr("width", 50)
+          .attr("height", d => d.age * 10)
+          .attr("fill", d => {
+            if (d.age > 10) {
+              return "red"
+            }
+            return "green"
+          })
+      })
   }
 }
